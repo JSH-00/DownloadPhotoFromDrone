@@ -8,14 +8,14 @@
 #import <Foundation/Foundation.h>
 #import <AFNetworking/AFNetworking.h>
 #import <Realm/Realm.h>
-#import "HCDownloadModel.h"
+#import "HCDownloadRealmModel.h"
 NS_ASSUME_NONNULL_BEGIN
 
-@interface PhotoDownloadManager : NSObject
+@interface PhotoDownloadTask : NSObject
 @property (nonatomic, strong) NSURLSessionDownloadTask* downloadSessionTask;
 @property (nonatomic, strong) NSString *downloadUrl;
 
-- (void)getPhotoInfoFromHost:(NSString*)url api:(NSString *)api mediaName:(NSString *)mediaName  completion:(nullable void (^)(HCDownloadModel *))completion;
+- (void)getPhotoInfoFromHost:(NSString*)url api:(NSString *)api mediaName:(NSString *)mediaName  completion:(nullable void (^)(HCDownloadRealmModel *))completion;
 
 - (NSString *)connectDownloadURLByHost:(NSString*)host Api:(NSString *)api MediaName:(NSString *)mediaName andIsThumb:(Boolean)isThumb;
 

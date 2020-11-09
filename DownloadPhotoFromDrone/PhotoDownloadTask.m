@@ -5,13 +5,13 @@
 //  Created by JSH on 2020/11/2.
 //
 
-#import "PhotoDownloadManager.h"
+#import "PhotoDownloadTask.h"
 
-@implementation PhotoDownloadManager
+@implementation PhotoDownloadTask
 - (void)getPhotoInfoFromHost:(NSString*)url
                          api:(NSString *)api
                    mediaName:(NSString *)mediaName
-                  completion:(void (^)(HCDownloadModel *))completionAtion
+                  completion:(void (^)(HCDownloadRealmModel *))completionAtion
 {
     NSString *getUrl = [NSString stringWithFormat:@"%@%@?name=%@", url, api, mediaName];
     NSLog(@"====getUrl>%@",getUrl);
@@ -23,7 +23,7 @@
         progress:nil
          success:^(NSURLSessionDataTask * _Nonnull task, id  responseObject) {
         
-        HCDownloadModel *callBackModel  = [[HCDownloadModel alloc]initWithDictionary:[(NSArray *)responseObject objectAtIndex:0]];
+        HCDownloadRealmModel *callBackModel  = [[HCDownloadRealmModel alloc]initWithDictionary:[(NSArray *)responseObject objectAtIndex:0]];
 
         if (completionAtion != nil) {
             NSLog(@"%@",NSHomeDirectory());

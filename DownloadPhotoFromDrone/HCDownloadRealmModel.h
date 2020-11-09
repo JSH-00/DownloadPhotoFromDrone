@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 #import <Realm/Realm.h>
 
-@interface HCDownloadModel : RLMObject
+@interface HCDownloadRealmModel : RLMObject
 typedef NS_ENUM(NSInteger, PhotoDownloadType)
 {
     PhotoDownloadTypeIdel = 0,

@@ -6,7 +6,7 @@
 //
 
 #import "PhotoDownloadViewController.h"
-#import "PhotoDownloadManager.h"
+#import "PhotoDownloadTask.h"
 #import <SDWebImage/SDWebImage.h>
 #import <Realm/Realm.h>
 NSString *const host = @"http://192.168.1.1";
@@ -15,9 +15,9 @@ NSString *const downloadMediaApi = @"/download/";
 NSString *const mediaName = @"100CRTHD_IMGC0030_e2e2435_jpg";
 
 @interface PhotoDownloadViewController ()
-@property (nonatomic, strong)HCDownloadModel * photoInfo;
+@property (nonatomic, strong)HCDownloadRealmModel * photoInfo;
 @property (nonatomic, strong) NSString *downloadUrl;
-@property (nonatomic, strong) PhotoDownloadManager *downloadPhotoManager ;
+@property (nonatomic, strong) PhotoDownloadTask *downloadPhotoManager ;
 @property (nonatomic, assign) Boolean downloadThumb;
 @property (nonatomic, strong) RLMRealm *realm;
 @property (nonatomic, weak) UIButton *downloadPhotoBtn;
@@ -32,7 +32,7 @@ NSString *const mediaName = @"100CRTHD_IMGC0030_e2e2435_jpg";
     
     NSLog(@"===>%@",NSHomeDirectory());
     
-    PhotoDownloadManager *downloadPhotoManager = [PhotoDownloadManager new];
+    PhotoDownloadTask *downloadPhotoManager = [PhotoDownloadTask new];
     
     self.downloadPhotoManager = downloadPhotoManager;
     
@@ -40,7 +40,7 @@ NSString *const mediaName = @"100CRTHD_IMGC0030_e2e2435_jpg";
                                            api:mediaInfoApi
                                      mediaName:mediaName
                                     completion:
-     ^(HCDownloadModel * model) {
+     ^(HCDownloadRealmModel * model) {
         
         self.photoInfo = model;
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -83,7 +83,7 @@ NSString *const mediaName = @"100CRTHD_IMGC0030_e2e2435_jpg";
         dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
         dispatch_async(que, ^{
             self.downloadThumb = YES;
-            [[PhotoDownloadManager new] downloadFileFromHost:host Api:downloadMediaApi MediaName:mediaName andIsThumb:self.downloadThumb completion:^(NSString * downloadFilePath){
+            [[PhotoDownloadTask new] downloadFileFromHost:host Api:downloadMediaApi MediaName:mediaName andIsThumb:self.downloadThumb completion:^(NSString * downloadFilePath){
                 // 更新数据库状态
                 [self.realm transactionWithBlock:^{
                     self.photoInfo.photoDownloadType = PhotoDownloadTypeThumbnailDownload;
@@ -96,7 +96,7 @@ NSString *const mediaName = @"100CRTHD_IMGC0030_e2e2435_jpg";
             dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
             
             self.downloadThumb = NO;
-            [[PhotoDownloadManager new] downloadFileFromHost:host Api:downloadMediaApi MediaName:mediaName andIsThumb:self.downloadThumb completion:^(NSString * downloadFilePath){
+            [[PhotoDownloadTask new] downloadFileFromHost:host Api:downloadMediaApi MediaName:mediaName andIsThumb:self.downloadThumb completion:^(NSString * downloadFilePath){
                 // 更新数据库状态
                 [self.realm transactionWithBlock:^{
                     

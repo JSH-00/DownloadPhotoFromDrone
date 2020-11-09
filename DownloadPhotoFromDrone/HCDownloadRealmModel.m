@@ -5,9 +5,9 @@
 //  Created by JSH on 2020/11/2.
 //
 
-#import "HCDownloadModel.h"
+#import "HCDownloadRealmModel.h"
 
-@implementation HCDownloadModel
+@implementation HCDownloadRealmModel
 - (instancetype)initWithDictionary:(NSDictionary *)dict
 {
     self = [super init];
