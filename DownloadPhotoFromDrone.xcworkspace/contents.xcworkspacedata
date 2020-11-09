@@ -2,9 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:../../../Downloads/simudreamtown.gpx 08-53-20-574.gpx 16-38-47-610.gpx">
-   </FileRef>
-   <FileRef
       location = "group:DownloadPhotoFromDrone.xcodeproj">
    </FileRef>
    <FileRef

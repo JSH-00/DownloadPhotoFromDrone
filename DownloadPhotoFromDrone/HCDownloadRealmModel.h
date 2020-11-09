@@ -37,6 +37,5 @@ typedef NS_ENUM(NSInteger, PhotoDownloadType)
 @property (nonatomic, strong) NSNumber<RLMInt> *track_mode;
 @property (nonatomic, strong) NSNumber<RLMInt> *trajectory_mode;
 @property (nonatomic, strong) NSNumber<RLMInt> *width;
-
-- (instancetype)initWithDictionary:(NSDictionary *)dict;
+- (void)changeRealmPhotoDownloadType:(PhotoDownloadType)photoDownloadType;
 @end

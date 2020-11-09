@@ -15,7 +15,7 @@ NSString *const downloadMediaApi = @"/download/";
 NSString *const mediaName = @"100CRTHD_IMGC0030_e2e2435_jpg";
 
 @interface PhotoDownloadViewController ()
-@property (nonatomic, strong)HCDownloadRealmModel * photoInfo;
+@property (nonatomic, strong) HCDownloadRealmModel * photoInfo;
 @property (nonatomic, strong) NSString *downloadUrl;
 @property (nonatomic, strong) PhotoDownloadTask *downloadPhotoManager ;
 @property (nonatomic, assign) Boolean downloadThumb;
@@ -85,10 +85,7 @@ NSString *const mediaName = @"100CRTHD_IMGC0030_e2e2435_jpg";
             self.downloadThumb = YES;
             [[PhotoDownloadTask new] downloadFileFromHost:host Api:downloadMediaApi MediaName:mediaName andIsThumb:self.downloadThumb completion:^(NSString * downloadFilePath){
                 // 更新数据库状态
-                [self.realm transactionWithBlock:^{
-                    self.photoInfo.photoDownloadType = PhotoDownloadTypeThumbnailDownload;
-                }];
-                
+                [self.photoInfo changeRealmPhotoDownloadType:PhotoDownloadTypeThumbnailDownload];
                 [self.downloadPhotoBtn setTitle:@"已下载缩略图，正在下载原图" forState:UIControlStateNormal];
                 dispatch_semaphore_signal(semaphore); // semaphore + 1
             }];
@@ -98,10 +95,7 @@ NSString *const mediaName = @"100CRTHD_IMGC0030_e2e2435_jpg";
             self.downloadThumb = NO;
             [[PhotoDownloadTask new] downloadFileFromHost:host Api:downloadMediaApi MediaName:mediaName andIsThumb:self.downloadThumb completion:^(NSString * downloadFilePath){
                 // 更新数据库状态
-                [self.realm transactionWithBlock:^{
-                    
-                    self.photoInfo.photoDownloadType = PhotoDownloadTypeOriginImageDownload;
-                }];
+                [self.photoInfo changeRealmPhotoDownloadType:PhotoDownloadTypeOriginImageDownload];
                 [self.downloadPhotoBtn setTitle:@"已下载原图" forState:UIControlStateNormal];
                 
                 // 照片存入相册

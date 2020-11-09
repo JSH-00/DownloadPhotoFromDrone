@@ -8,17 +8,12 @@
 #import "HCDownloadRealmModel.h"
 
 @implementation HCDownloadRealmModel
-- (instancetype)initWithDictionary:(NSDictionary *)dict
+- (void)changeRealmPhotoDownloadType:(PhotoDownloadType)photoDownloadType
 {
-    self = [super init];
-    if (self)
-    {
-        [self setValuesForKeysWithDictionary:dict];
-        self.photoDownloadType = PhotoDownloadTypeIdel;
-    }
-    return self;
+    [self.realm transactionWithBlock:^{
+        self.photoDownloadType = photoDownloadType;
+    }];
 }
-
 + (NSString *)primaryKey {
     return @"ctime";
 }

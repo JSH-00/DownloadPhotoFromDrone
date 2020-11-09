@@ -23,11 +23,12 @@
         progress:nil
          success:^(NSURLSessionDataTask * _Nonnull task, id  responseObject) {
         
-        HCDownloadRealmModel *callBackModel  = [[HCDownloadRealmModel alloc]initWithDictionary:[(NSArray *)responseObject objectAtIndex:0]];
+        HCDownloadModel *jsonInfo  = [[HCDownloadModel alloc]initWithDictionary:[(NSArray *)responseObject objectAtIndex:0]];
+        HCDownloadRealmModel * realmModel = [jsonInfo storedInformationToRealm];
 
         if (completionAtion != nil) {
             NSLog(@"%@",NSHomeDirectory());
-            completionAtion(callBackModel); //执行
+            completionAtion(realmModel); //执行
         }
     }
          failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
