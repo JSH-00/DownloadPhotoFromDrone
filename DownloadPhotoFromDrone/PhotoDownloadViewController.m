@@ -44,15 +44,12 @@ NSString *const mediaName = @"100CRTHD_IMGC0030_e2e2435_jpg";
         
         self.photoInfo = model;
         dispatch_async(dispatch_get_main_queue(), ^{
-            NSLog(@"===>dispatch_async线程%@",[NSThread currentThread]);
-            
             RLMRealm *realm = [RLMRealm defaultRealm];
             self.realm = realm;
             [realm beginWriteTransaction];
             [realm addOrUpdateObject:model];
             [realm commitWriteTransaction];
         });
-        
     }];
     
     UIImageView *downloadThumbnail = [[UIImageView alloc]initWithFrame:CGRectMake(80, 100, 250, 117)];

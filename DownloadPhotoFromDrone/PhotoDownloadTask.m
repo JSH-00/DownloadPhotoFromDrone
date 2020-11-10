@@ -15,26 +15,32 @@
 {
     NSString *getUrl = [NSString stringWithFormat:@"%@%@?name=%@", url, api, mediaName];
     NSLog(@"====getUrl>%@",getUrl);
-    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-    manager.responseSerializer = [AFJSONResponseSerializer serializer];
-    manager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/plain"];
-    [manager GET:getUrl
-      parameters:nil headers:nil
-        progress:nil
-         success:^(NSURLSessionDataTask * _Nonnull task, id  responseObject) {
-        
-        HCDownloadModel *jsonInfo  = [[HCDownloadModel alloc]initWithDictionary:[(NSArray *)responseObject objectAtIndex:0]];
-        HCDownloadRealmModel * realmModel = [jsonInfo storedInformationToRealm];
-
-        if (completionAtion != nil) {
-            NSLog(@"%@",NSHomeDirectory());
-            completionAtion(realmModel); //执行
+    NSURL* downloadUrl = [NSURL URLWithString:getUrl];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:downloadUrl];
+    [request setHTTPMethod:@"GET"];
+    [request setTimeoutInterval:120.0];
+    NSURLSessionConfiguration* config = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession* session = [NSURLSession sessionWithConfiguration:config];
+    NSURLSessionTask* task = [session dataTaskWithRequest:request
+                                        completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error)
+                              {
+        if (error == nil)
+        {
+            NSArray* jsonArray = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
+            NSMutableDictionary * dicInfo = [jsonArray objectAtIndex:0];
+            HCDownloadModel *jsonInfo  = [[HCDownloadModel alloc]initWithDictionary:dicInfo];
+            HCDownloadRealmModel * realmModel = [jsonInfo storedInformationToRealm];
+            if (completionAtion != nil)
+            {
+                completionAtion(realmModel); // callback
+            }
         }
-    }
-         failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        NSLog(@"请求失败--%@",error);
-        //        failureAtcion(task, error);
+        else
+        {
+            NSLog(@"请求失败:%@",error);
+        }
     }];
+    [task resume];
 }
 
 - (NSString *)connectDownloadURLByHost:(NSString*)host Api:(NSString *)api MediaName:(NSString *)mediaName andIsThumb:(Boolean)isThumb
