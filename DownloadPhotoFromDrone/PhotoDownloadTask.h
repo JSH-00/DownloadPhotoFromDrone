@@ -11,7 +11,7 @@
 #import "HCDownloadModel.h"
 NS_ASSUME_NONNULL_BEGIN
 
-@interface PhotoDownloadTask : NSObject
+@interface PhotoDownloadTask : NSObject <NSURLSessionDelegate>
 @property (nonatomic, strong) NSURLSessionDownloadTask* downloadSessionTask;
 @property (nonatomic, strong) NSString *downloadUrl;
 

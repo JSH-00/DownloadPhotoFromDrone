@@ -68,18 +68,25 @@
     [self createNewFolder:path];
     NSString *downloadFilePath = [path stringByAppendingPathComponent:url.lastPathComponent];
     NSLog(@"%@",NSHomeDirectory());
-    AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
-    self.downloadSessionTask = [manager downloadTaskWithRequest:request
-                                                            progress:
-                                ^(NSProgress * _Nonnull downloadProgress) {
-        NSLog(@"下载进度：%.0f％，线程：%@", downloadProgress.fractionCompleted * 100, [NSThread currentThread]);
-    } destination:^NSURL * _Nonnull(NSURL * _Nonnull targetPath, NSURLResponse * _Nonnull response) {
-        return [NSURL fileURLWithPath:downloadFilePath];
-    } completionHandler:^(NSURLResponse * _Nonnull response, NSURL * _Nullable filePath, NSError * _Nullable error) {
-        NSLog(@"下载完成");
-        completionAction(downloadFilePath);
+
+    NSURLSession *session=[NSURLSession sharedSession];
+    NSURLSessionDownloadTask *downloadTask=[session downloadTaskWithRequest:request completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
+        if (!error) {
+            NSError *saveError;
+            NSURL *downloadFilePathUrl=[NSURL fileURLWithPath:downloadFilePath];
+            [[NSFileManager defaultManager] replaceItemAtURL:downloadFilePathUrl withItemAtURL:location backupItemName:url.lastPathComponent options: NSFileManagerItemReplacementWithoutDeletingBackupItem resultingItemURL:nil error:&saveError];
+            if (!saveError) {
+                NSLog(@"save sucess.");
+            }else{
+                NSLog(@"error is :%@",saveError.localizedDescription);
+            }
+        }else{
+            NSLog(@"error is :%@",error.localizedDescription);
+        }
     }];
-    [self.downloadSessionTask resume];
+
+    [downloadTask resume];
+
 }
 
 #pragma mark 创建新文件夹
