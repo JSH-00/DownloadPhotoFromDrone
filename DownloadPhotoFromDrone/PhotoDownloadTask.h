@@ -6,7 +6,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <AFNetworking/AFNetworking.h>
 #import <Realm/Realm.h>
 #import "HCDownloadModel.h"
 NS_ASSUME_NONNULL_BEGIN

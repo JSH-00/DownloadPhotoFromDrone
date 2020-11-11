@@ -7,7 +7,6 @@
 
 #import "PhotoDownloadViewController.h"
 #import "PhotoDownloadTask.h"
-#import <SDWebImage/SDWebImage.h>
 #import <Realm/Realm.h>
 NSString *const host = @"http://192.168.1.1";
 NSString *const mediaInfoApi = @"/info/media/";
@@ -57,10 +56,12 @@ NSString *const mediaName = @"100CRTHD_IMGC0030_e2e2435_jpg";
     downloadThumbnail.contentMode = UIViewContentModeScaleAspectFill;
     [self.view addSubview:downloadThumbnail];
     
-    NSString *downloadUrl = [downloadPhotoManager connectDownloadURLByHost:host Api:downloadMediaApi MediaName:mediaName andIsThumb:self.downloadThumb];
-    self.downloadUrl = downloadUrl;
-    [downloadThumbnail sd_setImageWithURL:[NSURL URLWithString:downloadUrl]
-                         placeholderImage:[UIImage imageNamed:@"loading.png"]];
+    NSString *downloadUrlString = [downloadPhotoManager connectDownloadURLByHost:host Api:downloadMediaApi MediaName:mediaName andIsThumb:self.downloadThumb];
+    self.downloadUrl = downloadUrlString;
+    [downloadUrlString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    NSURL *downloadUrl=[NSURL URLWithString:downloadUrlString];
+    NSData *downloadUrlData=[NSData dataWithContentsOfURL:downloadUrl];
+    downloadThumbnail.image=[UIImage imageWithData:downloadUrlData];
     
     UIButton *downloadPhotoBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     self.downloadPhotoBtn = downloadPhotoBtn;
