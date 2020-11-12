@@ -74,7 +74,12 @@
         if (!error) {
             NSError *saveError;
             NSURL *downloadFilePathUrl=[NSURL fileURLWithPath:downloadFilePath];
-            [[NSFileManager defaultManager] replaceItemAtURL:downloadFilePathUrl withItemAtURL:location backupItemName:url.lastPathComponent options: NSFileManagerItemReplacementWithoutDeletingBackupItem resultingItemURL:nil error:&saveError];
+            NSFileManager *fileManager = [NSFileManager defaultManager];
+            if ([fileManager fileExistsAtPath:downloadFilePath]) {
+                  //若存在则删除目标文件再 move
+                  [fileManager removeItemAtPath:downloadFilePath error:&saveError];
+              }
+            [[NSFileManager defaultManager] moveItemAtURL:location toURL:downloadFilePathUrl error:&saveError];
             if (!saveError) {
                 NSLog(@"save sucess.");
             }else{
