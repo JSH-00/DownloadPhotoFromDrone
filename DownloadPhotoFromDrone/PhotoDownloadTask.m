@@ -82,6 +82,9 @@
             [[NSFileManager defaultManager] moveItemAtURL:location toURL:downloadFilePathUrl error:&saveError];
             if (!saveError) {
                 NSLog(@"save sucess.");
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    completionAction(downloadFilePath);
+                });
             }else{
                 NSLog(@"error is :%@",saveError.localizedDescription);
             }
