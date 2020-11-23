@@ -16,7 +16,7 @@
 		5705EDA5254FFF710046CB68 /* DownloadPhotoFromDroneTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5705EDA4254FFF710046CB68 /* DownloadPhotoFromDroneTests.m */; };
 		5705EDB0254FFF710046CB68 /* DownloadPhotoFromDroneUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5705EDAF254FFF710046CB68 /* DownloadPhotoFromDroneUITests.m */; };
 		5705EDDF25502EBE0046CB68 /* HCDownloadRealmModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 5705EDDE25502EBE0046CB68 /* HCDownloadRealmModel.m */; };
-		5705EDE82550418A0046CB68 /* PhotoDownloadTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 5705EDE72550418A0046CB68 /* PhotoDownloadTask.m */; };
+		5705EDE82550418A0046CB68 /* HCMediaServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 5705EDE72550418A0046CB68 /* HCMediaServer.m */; };
 		5705EE2325515F6E0046CB68 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5705EE2225515F6E0046CB68 /* Realm.framework */; };
 		5705EE2425515F6E0046CB68 /* Realm.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5705EE2225515F6E0046CB68 /* Realm.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		575771842559023100FADD34 /* HCDownloadModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 575771832559023100FADD34 /* HCDownloadModel.m */; };
@@ -75,8 +75,8 @@
 		5705EDB1254FFF710046CB68 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5705EDDD25502EBE0046CB68 /* HCDownloadRealmModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCDownloadRealmModel.h; sourceTree = "<group>"; };
 		5705EDDE25502EBE0046CB68 /* HCDownloadRealmModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HCDownloadRealmModel.m; sourceTree = "<group>"; };
-		5705EDE62550418A0046CB68 /* PhotoDownloadTask.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PhotoDownloadTask.h; sourceTree = "<group>"; };
-		5705EDE72550418A0046CB68 /* PhotoDownloadTask.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PhotoDownloadTask.m; sourceTree = "<group>"; };
+		5705EDE62550418A0046CB68 /* HCMediaServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HCMediaServer.h; sourceTree = "<group>"; };
+		5705EDE72550418A0046CB68 /* HCMediaServer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HCMediaServer.m; sourceTree = "<group>"; };
 		5705EDF525515D8B0046CB68 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
 		5705EDFF25515D960046CB68 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		5705EE0A25515E480046CB68 /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Realm.framework; path = "../../../Downloads/realm-objc-10.1.1/ios/dynamic/Realm.framework"; sourceTree = "<group>"; };
@@ -183,8 +183,8 @@
 				5705EDDE25502EBE0046CB68 /* HCDownloadRealmModel.m */,
 				575771822559023100FADD34 /* HCDownloadModel.h */,
 				575771832559023100FADD34 /* HCDownloadModel.m */,
-				5705EDE62550418A0046CB68 /* PhotoDownloadTask.h */,
-				5705EDE72550418A0046CB68 /* PhotoDownloadTask.m */,
+				5705EDE62550418A0046CB68 /* HCMediaServer.h */,
+				5705EDE72550418A0046CB68 /* HCMediaServer.m */,
 				5705ED91254FFF6E0046CB68 /* Main.storyboard */,
 				5705ED94254FFF700046CB68 /* Assets.xcassets */,
 				5705ED96254FFF700046CB68 /* LaunchScreen.storyboard */,
@@ -453,7 +453,7 @@
 				575771842559023100FADD34 /* HCDownloadModel.m in Sources */,
 				5705EDDF25502EBE0046CB68 /* HCDownloadRealmModel.m in Sources */,
 				5705ED90254FFF6E0046CB68 /* PhotoDownloadViewController.m in Sources */,
-				5705EDE82550418A0046CB68 /* PhotoDownloadTask.m in Sources */,
+				5705EDE82550418A0046CB68 /* HCMediaServer.m in Sources */,
 				5705ED8A254FFF6E0046CB68 /* AppDelegate.m in Sources */,
 				5705ED9B254FFF700046CB68 /* main.m in Sources */,
 			);

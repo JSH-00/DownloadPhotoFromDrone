@@ -1,5 +1,5 @@
 //
-//  PhotoDownloadManager.h
+//  HCMediaServer.h
 //  DownloadPhotoFromDrone
 //
 //  Created by JSH on 2020/11/2.
@@ -10,7 +10,7 @@
 #import "HCDownloadModel.h"
 NS_ASSUME_NONNULL_BEGIN
 
-@interface PhotoDownloadTask : NSObject <NSURLSessionDelegate>
+@interface HCMediaServer : NSObject <NSURLSessionDelegate>
 @property (nonatomic, strong) NSURLSessionDownloadTask* downloadSessionTask;
 @property (nonatomic, strong) NSString *downloadUrl;
 

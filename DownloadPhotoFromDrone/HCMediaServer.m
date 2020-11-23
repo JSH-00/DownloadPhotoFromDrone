@@ -1,13 +1,13 @@
 //
-//  PhotoDownloadManager.m
+//  HCMediaServer.m
 //  DownloadPhotoFromDrone
 //
 //  Created by JSH on 2020/11/2.
 //
 
-#import "PhotoDownloadTask.h"
+#import "HCMediaServer.h"
 
-@implementation PhotoDownloadTask
+@implementation HCMediaServer
 - (void)getPhotoInfoFromHost:(NSString*)url
                          api:(NSString *)api
                    mediaName:(NSString *)mediaName
