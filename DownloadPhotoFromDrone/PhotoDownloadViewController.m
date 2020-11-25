@@ -11,7 +11,7 @@
 NSString *const host = @"http://192.168.1.1";
 NSString *const mediaInfoApi = @"/info/media/";
 NSString *const downloadMediaApi = @"/download/";
-NSString *const mediaName = @"100CRTHD_IMGC0030_e2e2435_jpg";
+NSString *const mediaName = @"100HOVER_IMG_0006_33883af_jpg";
 
 @interface PhotoDownloadViewController ()
 @property (nonatomic, strong) HCDownloadRealmModel * photoInfo;
@@ -19,7 +19,8 @@ NSString *const mediaName = @"100CRTHD_IMGC0030_e2e2435_jpg";
 @property (nonatomic, strong) HCMediaServer *downloadPhotoServer ;
 @property (nonatomic, assign) Boolean downloadThumb;
 @property (nonatomic, strong) RLMRealm *realm;
-@property (nonatomic, weak) UIButton *downloadPhotoBtn;
+@property (nonatomic, strong) UIImageView *downloadThumbnail;
+@property (nonatomic, strong) UIButton *downloadPhotoBtn;
 
 @end
 
@@ -28,9 +29,44 @@ NSString *const mediaName = @"100CRTHD_IMGC0030_e2e2435_jpg";
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
+    UIImageView *downloadThumbnail = self.downloadThumbnail;
+    UIButton *downloadPhotoBtn = self.downloadPhotoBtn;
+    [self refreshUIData];
+
     NSLog(@"===>%@",NSHomeDirectory());
-    
+}
+
+#pragma mark 懒加载控件
+- (UIImageView *)downloadThumbnail
+{
+    if(!_downloadThumbnail)
+    {
+        UIImageView *downloadThumbnail = [[UIImageView alloc]initWithFrame:CGRectMake(80, 100, 250, 117)];
+        _downloadThumbnail = downloadThumbnail;
+        _downloadThumbnail.backgroundColor = [UIColor redColor];
+        _downloadThumbnail.contentMode = UIViewContentModeScaleAspectFill;
+        [self.view addSubview:_downloadThumbnail];
+
+    }
+    return _downloadThumbnail;
+}
+
+- (UIButton *)downloadPhotoBtn
+{
+    if(!_downloadPhotoBtn)
+    {
+        _downloadPhotoBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        _downloadPhotoBtn.frame = CGRectMake(60, 350, 300, 30);
+        _downloadPhotoBtn.backgroundColor = [UIColor blackColor];
+        [_downloadPhotoBtn setTitle:@"下载缩略图" forState:UIControlStateNormal];
+        [_downloadPhotoBtn addTarget:self action:@selector(downloadPhotoButton:) forControlEvents:UIControlEventTouchUpInside];
+        [self.view addSubview:_downloadPhotoBtn];
+    }
+    return _downloadPhotoBtn;
+}
+
+- (void)refreshUIData
+{
     HCMediaServer *downloadPhotoServer = [HCMediaServer new];
     
     self.downloadPhotoServer = downloadPhotoServer;
@@ -51,28 +87,15 @@ NSString *const mediaName = @"100CRTHD_IMGC0030_e2e2435_jpg";
         });
     }];
     
-    UIImageView *downloadThumbnail = [[UIImageView alloc]initWithFrame:CGRectMake(80, 100, 250, 117)];
-    downloadThumbnail.backgroundColor = [UIColor redColor];
-    downloadThumbnail.contentMode = UIViewContentModeScaleAspectFill;
-    [self.view addSubview:downloadThumbnail];
-    
     NSString *downloadUrlString = [downloadPhotoServer connectDownloadURLByHost:host Api:downloadMediaApi MediaName:mediaName andIsThumb:self.downloadThumb];
-    self.downloadUrl = downloadUrlString;
     [downloadUrlString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
     NSURL *downloadUrl=[NSURL URLWithString:downloadUrlString];
     NSData *downloadUrlData=[NSData dataWithContentsOfURL:downloadUrl];
-    downloadThumbnail.image=[UIImage imageWithData:downloadUrlData];
-    
-    UIButton *downloadPhotoBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.downloadPhotoBtn = downloadPhotoBtn;
-    downloadPhotoBtn.frame = CGRectMake(60, 350, 300, 30);
-    downloadPhotoBtn.backgroundColor = [UIColor blackColor];
-    [downloadPhotoBtn setTitle:@"下载缩略图" forState:UIControlStateNormal];
-    [downloadPhotoBtn addTarget:self action:@selector(downloadPhotoButton:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:downloadPhotoBtn];
+    self.downloadThumbnail.image=[UIImage imageWithData:downloadUrlData];
+    self.downloadUrl = downloadUrlString;
 }
 
--(void)downloadPhotoButton:(UIButton *)btn
+- (void)downloadPhotoButton:(UIButton *)btn
 {
     if (self.photoInfo.photoDownloadType == PhotoDownloadTypeIdel)
     {
