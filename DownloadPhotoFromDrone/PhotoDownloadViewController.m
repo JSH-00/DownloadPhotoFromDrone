@@ -6,21 +6,21 @@
 //
 
 #import "PhotoDownloadViewController.h"
-#import "PhotoDownloadManager.h"
-#import <SDWebImage/SDWebImage.h>
+#import "HCMediaServer.h"
 #import <Realm/Realm.h>
 NSString *const host = @"http://192.168.1.1";
 NSString *const mediaInfoApi = @"/info/media/";
 NSString *const downloadMediaApi = @"/download/";
-NSString *const mediaName = @"100CRTHD_IMGC0030_e2e2435_jpg";
+NSString *const mediaName = @"100HOVER_IMG_0006_33883af_jpg";
 
 @interface PhotoDownloadViewController ()
-@property (nonatomic, strong)HCDownloadModel * photoInfo;
+@property (nonatomic, strong) HCDownloadRealmModel * photoInfo;
 @property (nonatomic, strong) NSString *downloadUrl;
-@property (nonatomic, strong) PhotoDownloadManager *downloadPhotoManager ;
+@property (nonatomic, strong) HCMediaServer *downloadPhotoServer ;
 @property (nonatomic, assign) Boolean downloadThumb;
 @property (nonatomic, strong) RLMRealm *realm;
-@property (nonatomic, weak) UIButton *downloadPhotoBtn;
+@property (nonatomic, strong) UIImageView *downloadThumbnail;
+@property (nonatomic, strong) UIButton *downloadPhotoBtn;
 
 @end
 
@@ -29,52 +29,73 @@ NSString *const mediaName = @"100CRTHD_IMGC0030_e2e2435_jpg";
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
+    UIImageView *downloadThumbnail = self.downloadThumbnail;
+    UIButton *downloadPhotoBtn = self.downloadPhotoBtn;
+    [self refreshUIData];
+
     NSLog(@"===>%@",NSHomeDirectory());
+}
+
+#pragma mark 懒加载控件
+- (UIImageView *)downloadThumbnail
+{
+    if(!_downloadThumbnail)
+    {
+        UIImageView *downloadThumbnail = [[UIImageView alloc]initWithFrame:CGRectMake(80, 100, 250, 117)];
+        _downloadThumbnail = downloadThumbnail;
+        _downloadThumbnail.backgroundColor = [UIColor redColor];
+        _downloadThumbnail.contentMode = UIViewContentModeScaleAspectFill;
+        [self.view addSubview:_downloadThumbnail];
+
+    }
+    return _downloadThumbnail;
+}
+
+- (UIButton *)downloadPhotoBtn
+{
+    if(!_downloadPhotoBtn)
+    {
+        _downloadPhotoBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        _downloadPhotoBtn.frame = CGRectMake(60, 350, 300, 30);
+        _downloadPhotoBtn.backgroundColor = [UIColor blackColor];
+        [_downloadPhotoBtn setTitle:@"下载缩略图" forState:UIControlStateNormal];
+        [_downloadPhotoBtn addTarget:self action:@selector(downloadPhotoButton:) forControlEvents:UIControlEventTouchUpInside];
+        [self.view addSubview:_downloadPhotoBtn];
+    }
+    return _downloadPhotoBtn;
+}
+
+- (void)refreshUIData
+{
+    HCMediaServer *downloadPhotoServer = [HCMediaServer new];
     
-    PhotoDownloadManager *downloadPhotoManager = [PhotoDownloadManager new];
+    self.downloadPhotoServer = downloadPhotoServer;
     
-    self.downloadPhotoManager = downloadPhotoManager;
-    
-    [downloadPhotoManager getPhotoInfoFromHost:host
+    [downloadPhotoServer getPhotoInfoFromHost:host
                                            api:mediaInfoApi
                                      mediaName:mediaName
                                     completion:
-     ^(HCDownloadModel * model) {
+     ^(HCDownloadRealmModel * model) {
         
         self.photoInfo = model;
         dispatch_async(dispatch_get_main_queue(), ^{
-            NSLog(@"===>dispatch_async线程%@",[NSThread currentThread]);
-            
             RLMRealm *realm = [RLMRealm defaultRealm];
             self.realm = realm;
             [realm beginWriteTransaction];
             [realm addOrUpdateObject:model];
             [realm commitWriteTransaction];
         });
-        
     }];
     
-    UIImageView *downloadThumbnail = [[UIImageView alloc]initWithFrame:CGRectMake(80, 100, 250, 117)];
-    downloadThumbnail.backgroundColor = [UIColor redColor];
-    downloadThumbnail.contentMode = UIViewContentModeScaleAspectFill;
-    [self.view addSubview:downloadThumbnail];
-    
-    NSString *downloadUrl = [downloadPhotoManager connectDownloadURLByHost:host Api:downloadMediaApi MediaName:mediaName andIsThumb:self.downloadThumb];
-    self.downloadUrl = downloadUrl;
-    [downloadThumbnail sd_setImageWithURL:[NSURL URLWithString:downloadUrl]
-                         placeholderImage:[UIImage imageNamed:@"loading.png"]];
-    
-    UIButton *downloadPhotoBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.downloadPhotoBtn = downloadPhotoBtn;
-    downloadPhotoBtn.frame = CGRectMake(60, 350, 300, 30);
-    downloadPhotoBtn.backgroundColor = [UIColor blackColor];
-    [downloadPhotoBtn setTitle:@"下载缩略图" forState:UIControlStateNormal];
-    [downloadPhotoBtn addTarget:self action:@selector(downloadPhotoButton:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:downloadPhotoBtn];
+    NSString *downloadUrlString = [downloadPhotoServer connectDownloadURLByHost:host Api:downloadMediaApi MediaName:mediaName andIsThumb:self.downloadThumb];
+    [downloadUrlString stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    NSURL *downloadUrl=[NSURL URLWithString:downloadUrlString];
+    NSData *downloadUrlData=[NSData dataWithContentsOfURL:downloadUrl];
+    self.downloadThumbnail.image=[UIImage imageWithData:downloadUrlData];
+    self.downloadUrl = downloadUrlString;
 }
 
--(void)downloadPhotoButton:(UIButton *)btn
+- (void)downloadPhotoButton:(UIButton *)btn
 {
     if (self.photoInfo.photoDownloadType == PhotoDownloadTypeIdel)
     {
@@ -83,12 +104,9 @@ NSString *const mediaName = @"100CRTHD_IMGC0030_e2e2435_jpg";
         dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
         dispatch_async(que, ^{
             self.downloadThumb = YES;
-            [[PhotoDownloadManager new] downloadFileFromHost:host Api:downloadMediaApi MediaName:mediaName andIsThumb:self.downloadThumb completion:^(NSString * downloadFilePath){
+            [[HCMediaServer new] downloadFileFromHost:host Api:downloadMediaApi MediaName:mediaName andIsThumb:self.downloadThumb completion:^(NSString * downloadFilePath){
                 // 更新数据库状态
-                [self.realm transactionWithBlock:^{
-                    self.photoInfo.photoDownloadType = PhotoDownloadTypeThumbnailDownload;
-                }];
-                
+                [self.photoInfo changeRealmPhotoDownloadType:PhotoDownloadTypeThumbnailDownload];
                 [self.downloadPhotoBtn setTitle:@"已下载缩略图，正在下载原图" forState:UIControlStateNormal];
                 dispatch_semaphore_signal(semaphore); // semaphore + 1
             }];
@@ -96,12 +114,9 @@ NSString *const mediaName = @"100CRTHD_IMGC0030_e2e2435_jpg";
             dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
             
             self.downloadThumb = NO;
-            [[PhotoDownloadManager new] downloadFileFromHost:host Api:downloadMediaApi MediaName:mediaName andIsThumb:self.downloadThumb completion:^(NSString * downloadFilePath){
+            [[HCMediaServer new] downloadFileFromHost:host Api:downloadMediaApi MediaName:mediaName andIsThumb:self.downloadThumb completion:^(NSString * downloadFilePath){
                 // 更新数据库状态
-                [self.realm transactionWithBlock:^{
-                    
-                    self.photoInfo.photoDownloadType = PhotoDownloadTypeOriginImageDownload;
-                }];
+                [self.photoInfo changeRealmPhotoDownloadType:PhotoDownloadTypeOriginImageDownload];
                 [self.downloadPhotoBtn setTitle:@"已下载原图" forState:UIControlStateNormal];
                 
                 // 照片存入相册
